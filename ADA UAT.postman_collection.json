@@ -1,0 +1,1481 @@
+{
+	"info": {
+		"_postman_id": "cb1c1fec-1a7d-4cf9-9d9b-23675a75799d",
+		"name": "ADA UAT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36864709",
+		"_collection_link": "https://grey-firefly-722717.postman.co/workspace/Hero-ki-workspace-~42e73b56-a5ae-4cc4-8702-b5a91a1d6046/collection/36864709-cb1c1fec-1a7d-4cf9-9d9b-23675a75799d?action=share&source=collection_link&creator=36864709"
+	},
+	"item": [
+		{
+			"name": "Token AX",
+			"item": [
+				{
+					"name": "Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//const jsondata = pm.response.json();\r",
+									"//pm.collectionVariables.set(\"token\", jsondata.access_token);\r",
+									"//console.log(token)\r",
+									"pm.test(\"Token is not empty\", function(){\r",
+									"   var jsonData = pm.response.json();\r",
+									"   pm.expect(jsonData[\"access_token\"]).not.equal(0);\r",
+									"   pm.environment.set(\"token\", jsonData[\"access_token\"])\r",
+									"   \r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{ClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{Client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{AxURL}}/.default",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Authority}}/{{TenantID}}/oauth2/v2.0/token/",
+							"host": [
+								"{{Authority}}"
+							],
+							"path": [
+								"{{TenantID}}",
+								"oauth2",
+								"v2.0",
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products AX",
+			"item": [
+				{
+					"name": "Add Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Product Created\", function(){\r",
+									"   var jsonData = pm.response.json();\r",
+									"   pm.expect(jsonData[\"ProductNumber\"]).not.equal(0);\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomProductName = \"Product\" + Math.floor(Math.random() * 1000);\r",
+									"const randomProductDescription = \"Description\" + Math.floor(Math.random() * 1000);\r",
+									"const randomProductNumber = \"P\" + Math.floor(Math.random() * 100000);\r",
+									"var randomName = 'Product' + Math.floor(Math.random() * 1000);\r",
+									"\r",
+									"pm.environment.set(\"ProductSearchName\", randomProductName);\r",
+									"pm.environment.set(\"ProductName\", randomProductName);\r",
+									"pm.environment.set(\"ProductDescription\", randomProductDescription);\r",
+									"pm.environment.set(\"ProductNumber\", randomProductNumber); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n    \"ProductNumber\": \"{{ProductNumber}}\",\r\n    \"ProductType\": \"{{ProductType}}\",\r\n    \"ProductSubType\": \"{{ProductSubType}}\",\r\n    \"ProductDescription\": \"{{ProductDescription}}\",\r\n    \"ProductSearchName\": \"{{ProductSearchName}}\",\r\n    \"ProductName\": \"{{ProductName}}\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductsV2",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductsV2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReleasedProduct",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductNumber\": \"{{ProductNumber}}\",\r\n    \"ItemNumber\": \"{{ProductNumber}}\" ,\r\n    \"dataAreaId\": \"{{dataAreaId}}\",\r\n    \"ItemModelGroupId\": \"{{ItemModelGroupId}}\",\r\n    \"PurchaseSalesTaxItemGroupCode\": \"{{SalesSalesTaxItemGroupCode}}\",\r\n    \"SalesSalesTaxItemGroupCode\": \"{{SalesSalesTaxItemGroupCode}}\",\r\n    \"StorageDimensionGroupName\": \"{{StorageDimensionGroupName}}\",\r\n   \"TrackingDimensionGroupName\": \"{{TrackingDimensionGroupName}}\",\r\n   \"InventoryReservationHierarchyName\": \"{{InventoryReservationHierarchyName}}\",\r\n    \"UnitConversionSequenceGroupId\": \"{{UnitConversionSequenceGroupId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ReleasedProductsV2",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ReleasedProductsV2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Category Assignment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductNumber\": \"{{ProductNumber}}\",\r\n    \"ProductCategoryHierarchyName\": \"{{ProductCategoryHierarchyNames}}\",\r\n    \"ProductCategoryName\": \"{{ProductCategoryName}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductCategoryAssignments",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductCategoryAssignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful PATCH request\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductDescription\": \"Description365555\",\r\n    \"ProductName\": \"MasterProduct483555\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductsV2('{{ProductNumber}}')",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductsV2('{{ProductNumber}}')"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Product Master and Variants",
+			"item": [
+				{
+					"name": "Add Product Master",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomProductName = \"MasterProduct\" + Math.floor(Math.random() * 1000);\r",
+									"const randomProductDescription = \"Description\" + Math.floor(Math.random() * 1000);\r",
+									"\r",
+									"pm.environment.set(\"MasterName\", randomProductName);\r",
+									"pm.environment.set(\"ProductDescription\", randomProductDescription);\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"var randomNumber = Math.floor(Math.random() * 10000) + 1;\r",
+									"\r",
+									"pm.environment.set(\"ProductMasterNumber\", randomNumber);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"  if(pm.response.code == 401)\r",
+									"  {\r",
+									"eval(pm.variables.get(\"executeReferencedRequest\"));\r",
+									"executeReferencedRequest(pm.variables.get('Host'),\r",
+									" pm.variables.get('Authority'), pm.variables.get('TenantID'),\r",
+									" pm.variables.get('ClientId'), \r",
+									" pm.variables.get('AppKey'),\r",
+									" 'client_credentials',\r",
+									" pm.variables.get('AxURL')+'/.default');\r",
+									"    postman.setNextRequest(pm.info.requestName)\r",
+									"  }\r",
+									"  \r",
+									"else\r",
+									"{\r",
+									"pm.test(\"Master Product Created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"strictSSL": false
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductNumber\": \"{{ProductMasterNumber}}\",\r\n    \"ProductType\": \"{{ProductType}}\",\r\n    \"VariantConfigurationTechnology\": \"{{VariantConfigurationTechnology}}\",\r\n    \"StorageDimensionGroupName\": \"{{StorageDimensionGroupName}}\",\r\n    \"TrackingDimensionGroupName\": \"{{TrackingDimensionGroupName}}\",\r\n    \"ProductDimensionGroupName\": \"{{ProductDimensionGroupName}}\",\r\n    \"ProductSearchName\": \"{{ProductSearchName}}\",\r\n    \"ProductName\": \"{{MasterName}}\",\r\n    \"ProductDescription\": \"{{ProductDescription}}\"\r\n     }\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductMasters",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductMasters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Color1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"\r",
+									"\r",
+									"pm.test(\"Color added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n    \"ProductColorId\": \"{{color1}}\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductMasterColors",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductMasterColors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Color2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"\r",
+									"\r",
+									"pm.test(\"Color added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n    \"ProductColorId\": \"{{color2}}\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductMasterColors",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductMasterColors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Config 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"const pnum = jsondata.ProductNumber;\r",
+									"\r",
+									"\r",
+									"pm.test(\"Size added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n\r\n   \"ProductConfigurationId\": \"{{config1}}\"\r\n            \r\n            \r\n   \r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductMasterConfigurations",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductMasterConfigurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Config 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"const pnum = jsondata.ProductNumber;\r",
+									"\r",
+									"\r",
+									"pm.test(\"Size added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n    \r\n       \"ProductConfigurationId\": \"{{config2}}\"\r\n    \r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductMasterConfigurations",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductMasterConfigurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Released Master Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Master Product Released\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductNumber\": \"{{ProductMasterNumber}}\",\r\n    \"dataAreaId\": \"{{dataAreaId}}\",\r\n    \"ItemNumber\": \"{{ProductMasterNumber}}\",\r\n    \"ItemModelGroupId\": \"{{ItemModelGroupId}}\",\r\n    \"StorageDimensionGroupName\": \"{{StorageDimensionGroupName}}\",\r\n    \"InventoryReservationHierarchyName\": \"{{InventoryReservationHierarchyName}}\",\r\n    \"PurchaseSalesTaxItemGroupCode\": \"{{PurchaseSalesTaxItemGroupCode}}\",\r\n    \"SalesSalesTaxItemGroupCode\": \"{{SalesSalesTaxItemGroupCode}}\",\r\n   \"TrackingDimensionGroupName\": \"{{TrackingDimensionGroupName}}\",\r\n  \r\n   \"UnitConversionSequenceGroupId\": \"{{UnitConversionSequenceGroupId}}\"\r\n  \r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ReleasedProductMasters",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ReleasedProductMasters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Variant1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"const pnum = jsondata.ProductNumber;\r",
+									"\r",
+									"\r",
+									"pm.test(\"Vaeiants Added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n            \"dataAreaId\": \"{{dataAreaId}}\",\r\n            \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n            \r\n           \"ProductConfigurationId\": \"{{config1}}\",\r\n            \"ProductColorId\": \"{{color1}}\",\r\n            \r\n            \"ItemNumber\": \"{{ProductMasterNumber}}\"\r\n            \r\n        }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ReleasedProductVariants",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ReleasedProductVariants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Variant2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"const pnum = jsondata.ProductNumber;\r",
+									"\r",
+									"\r",
+									"pm.test(\"Vaeiants Added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n            \"dataAreaId\": \"{{dataAreaId}}\",\r\n            \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n            \r\n           \"ProductConfigurationId\": \"{{config1}}\",\r\n            \"ProductColorId\": \"{{color2}}\",\r\n            \r\n            \"ItemNumber\": \"{{ProductMasterNumber}}\"\r\n            \r\n        }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ReleasedProductVariants",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ReleasedProductVariants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Variant3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"const pnum = jsondata.ProductNumber;\r",
+									"\r",
+									"\r",
+									"pm.test(\"Vaeiants Added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n            \"dataAreaId\": \"{{dataAreaId}}\",\r\n            \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n            \r\n           \"ProductConfigurationId\": \"{{config2}}\",\r\n            \"ProductColorId\": \"{{color1}}\",\r\n            \r\n            \"ItemNumber\": \"{{ProductMasterNumber}}\"\r\n            \r\n        }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ReleasedProductVariants",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ReleasedProductVariants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Variant4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsondata = pm.response.json();\r",
+									"const pnum = jsondata.ProductNumber;\r",
+									"\r",
+									"\r",
+									"pm.test(\"Vaeiants Added\",function(){\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if(pm.response.code != 201)\r",
+									"{\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "login.microsoftonline.com",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n            \"dataAreaId\": \"{{dataAreaId}}\",\r\n            \"ProductMasterNumber\": \"{{ProductMasterNumber}}\",\r\n            \r\n           \"ProductConfigurationId\": \"{{config2}}\",\r\n            \"ProductColorId\": \"{{color2}}\",\r\n            \r\n            \"ItemNumber\": \"{{ProductMasterNumber}}\"\r\n            \r\n        }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ReleasedProductVariants",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ReleasedProductVariants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Category Assignment Master",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProductNumber\": \"{{ProductMasterNumber}}\",\r\n    \"ProductCategoryHierarchyName\": \"{{ProductCategoryHierarchyName}}\",\r\n    \"ProductCategoryName\": \"{{ProductCategoryName}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/ProductCategoryAssignments",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"ProductCategoryAssignments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TA",
+			"item": [
+				{
+					"name": "Create Trade Agreement Customer Specific",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dataAreaId\": \"{{dataAreaId}}\",\r\n    \"ItemNumber\": \"{{ProductNumber}}\",\r\n    \"PriceCurrencyCode\": \"{{Currency}}\",\r\n  \r\n     \"PriceCustomerGroupCode\": \"LEGEAR\",\r\n   \r\n    \"Price\": 250\r\n\r\n    \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AxURL}}/data/SalesPriceAgreements",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"SalesPriceAgreements"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shopify",
+			"item": [
+				{
+					"name": "Order Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"customer_Email = pm.environment.get('customerEmail')\r",
+									"\r",
+									"pm.test(\"Verify Order Has Created\", function () {\r",
+									"   var jsonData = pm.response.json();\r",
+									"   pm.expect(jsonData[\"order\"][\"id\"]).not.eql(null);\r",
+									"   pm.environment.set(\"Order_id\",jsonData[\"order\"][\"id\"])\r",
+									"});\r",
+									"// pm.test(\"Verify Customer email Created in customer Create\", function () {\r",
+									"//    var jsonData = pm.response.json();\r",
+									"//    pm.expect(jsonData[\"order\"][\"customer\"][\"email\"]).to.eql(customer_Email);\r",
+									"// });\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"});\r",
+									"pm.test(\"Verify Order total is not equal to 0\", function () {\r",
+									"   var jsonData = pm.response.json();\r",
+									"   pm.expect(jsonData[\"order\"][\"current_total_price\"]).not.eql(null);\r",
+									"});\r",
+									"pm.test(\"Save Shopify order price\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.environment.set(\"Shopify_OrderPrice\", jsonData.order.current_total_price);\r",
+									"});\r",
+									"pm.test(\"Save Shopify order name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.environment.set(\"Shopify_OrderName\", jsonData.order.name);\r",
+									"    \r",
+									"    let orderName = pm.environment.get(\"Shopify_OrderName\");\r",
+									"    let encodedOrderName = orderName.replace(/#/g, '%23');\r",
+									"    pm.environment.set(\"Shopify_OrderName\", encodedOrderName);\r",
+									"    console.log(\"Updated Shopify_OrderName:\", encodedOrderName);\r",
+									"});\r",
+									"pm.test(\"Save Shopify order number\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.environment.set(\"Shopify_OrderNumber\", jsonData.order.id);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Shopify-Access-Token",
+								"value": "{{auth_pass}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"order\": {\r\n        \"line_items\": [\r\n            {\r\n                \"title\": \"LEGEAR Test Item 17-09-2024\",\r\n                \"product_id\": \"9641007841594\",\r\n                \"sku\": \"110151\",\r\n                \"variant_id\": \"{{Svariants_id}}\",\r\n                \"price\": \"{{Sprice}}\"\r\n            }\r\n        ],\r\n        \"transactions\": [\r\n            {\r\n                \"kind\": \"sale\",\r\n                \"status\": \"success\",\r\n                \"amount\": 101\r\n            }\r\n        ],\r\n        \"customer\": {\r\n            \"id\": \"{{Customer_id}}\"\r\n        },\r\n        \"billing_address\": {\r\n            \"first_name\": \"Morne\",\r\n            \"address1\": \"25 Harbour Street\",\r\n            \"phone\": null,\r\n            \"city\": \"Sydney\",\r\n            \"zip\": \"2000\",\r\n            \"province\": \"New South Wales\",\r\n            \"country\": \"Australia\",\r\n            \"last_name\": \"van der Bank\",\r\n            \"address2\": null,\r\n            \"company\": null,\r\n            \"latitude\": null,\r\n            \"longitude\": null,\r\n            \"name\": \"Morne van der Bank\",\r\n            \"country_code\": \"AU\",\r\n            \"province_code\": \"NSW\"\r\n        },\r\n        \"shipping_address\": {\r\n            \"address1\": \"123 Amoebobacterieae St\",\r\n            \"address2\": \"\",\r\n            \"city\": \"Ottawa\",\r\n            \"company\": null,\r\n            \"country\": \"Canada\",\r\n            \"first_name\": \"Bob\",\r\n            \"last_name\": \"Bobsen\",\r\n            \"latitude\": \"45.41634\",\r\n            \"longitude\": \"-75.6868\",\r\n            \"phone\": \"555-625-1199\",\r\n            \"province\": \"Ontario\",\r\n            \"zip\": \"K2P0V6\",\r\n            \"name\": \"Bob Bobsen\",\r\n            \"country_code\": \"CA\",\r\n            \"province_code\": \"ON\"\r\n        },\r\n        \"currency\": \"USD\",\r\n        \"shipping_lines\": []\r\n    }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Shopify_url}}/{{version}}/orders.json",
+							"host": [
+								"{{Shopify_url}}"
+							],
+							"path": [
+								"{{version}}",
+								"orders.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order Canceled\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{auth_pass}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{auth_user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"order\": {\r\n        \r\n        \"restock\": false,\r\n        \"reason\": \"other\",\r\n        \"email\": false,\r\n        \"refund\": false\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Shopify_url}}/{{version}}/orders/{{Shopify_OrderNumber}}/cancel.json",
+							"host": [
+								"{{Shopify_url}}"
+							],
+							"path": [
+								"{{version}}",
+								"orders",
+								"{{Shopify_OrderNumber}}",
+								"cancel.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vaildate Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let shopifyOrderName = pm.environment.get(\"Shopify_OrderName\");\r",
+									"\r",
+									"let responseBody = pm.response.json();\r",
+									"if(responseBody.value.length > 0){\r",
+									"    let customerRequisitionNumber = responseBody.value[0].CustomerRequisitionNumber;\r",
+									"    pm.test(\"Shopify_OrderName matches last 4 characters of CustomerRequisitionNumber\", function () {\r",
+									"        pm.expect(shopifyOrderName.slice(-4)).to.equal(customerRequisitionNumber.slice(-4));\r",
+									"    });\r",
+									"} else {\r",
+									"    pm.expect(responseBody, \"No sales data found\").to.not.be.empty;\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{AxURL}}/data/SalesOrderLines?$filter=CustomerRequisitionNumber eq '{{Shopify_OrderName}}'",
+							"host": [
+								"{{AxURL}}"
+							],
+							"path": [
+								"data",
+								"SalesOrderLines"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "CustomerRequisitionNumber eq '{{Shopify_OrderName}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order Refund Calculate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refund\": {\r\n    \"shipping\": {\r\n      \"full_refund\": true\r\n    },\r\n    \"refund_line_items\": [\r\n      {\r\n        \"line_item_id\":15426901901626,\r\n        \"quantity\": 1,\r\n        \"restock_type\": \"no_restock\"\r\n      }\r\n    ]\r\n  }}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Shopify_url}}/{{version}}/orders/{{Shopify_OrderNumber}}/refunds/calculate.json",
+							"host": [
+								"{{Shopify_url}}"
+							],
+							"path": [
+								"{{version}}",
+								"orders",
+								"{{Shopify_OrderNumber}}",
+								"refunds",
+								"calculate.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order refund",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refund\": {\r\n    \"shipping\": {\r\n      \"full_refund\": true\r\n    },\r\n    \"refund_line_items\": [\r\n      {\r\n        \"line_item_id\":15426901901626,\r\n        \"quantity\": 1,\r\n        \"restock_type\": \"no_restock\"\r\n      }\r\n    ]\r\n  }}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Shopify_url}}/{{version}}/orders/{{Shopify_OrderNumber}}/refunds.json",
+							"host": [
+								"{{Shopify_url}}"
+							],
+							"path": [
+								"{{version}}",
+								"orders",
+								"{{Shopify_OrderNumber}}",
+								"refunds.json"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{auth_pass}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{auth_user}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "ax_token",
+			"value": ""
+		},
+		{
+			"key": "ProductCategoryHierarchyName",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
