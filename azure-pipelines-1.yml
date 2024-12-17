@@ -1,0 +1,50 @@
+trigger:
+  branches:
+    include:
+      - main  # Trigger pipeline on changes to 'main'
+
+pool:
+  name: test pool  # Use the correct pool name where the agent is registered
+  demands: []      # Explicitly clear any default demands like Agent.Version
+
+variables:
+  # Postman file paths
+  postmanCollection: 'ADA UAT.postman_collection.json'
+  postmanEnvironment: 'ada uat.postman_environment with cred.json'
+
+  # Dynamic environment variables
+  TenantID: '836eb414-c26e-4581-82aa-a4f3795facd2'
+  ClientId: 'b667784b-4777-4aee-9cd4-ac1efa39c786'
+  Client_secret: 'b667784b-4777-4aee-9cd4-ac1efa39c786'
+  auth_user: '426872cf14b0d0f81ffade94821faabf'
+  auth_pass: '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'
+
+steps:
+  - script: |
+      echo Installing Node.js and Newman...
+      choco install nodejs-lts -y
+      npm install -g newman
+    displayName: 'Install Node.js and Newman'
+
+  - checkout: self
+    displayName: 'Checkout Repository'
+
+  - script: |
+      echo Running Postman Collection with dynamic environment variables...
+      newman run "$(postmanCollection)" ^
+      -e "$(postmanEnvironment)" ^
+      --env-var "TenantID=$(TenantID)" ^
+      --env-var "ClientId=$(ClientId)" ^
+      --env-var "Client_secret=$(Client_secret)" ^
+      --env-var "auth_user=$(auth_user)" ^
+      --env-var "auth_pass=$(auth_pass)" ^
+      --reporters cli,junit ^
+      --reporter-junit-export "TestResults\Results.xml"
+    displayName: 'Run Postman Collection'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**\Results.xml'
+      testRunTitle: 'Postman API Test Results'
+    condition: succeededOrFailed()
+    displayName: 'Publish Test Results'
